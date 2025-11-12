@@ -1,0 +1,127 @@
+{# templates/m04_course.html #}
+{% extends 'base.html' %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/m04_courses.css') }}">
+
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        {% set bg = 'text-bg-secondary' %}
+        {% if category == 'success' %}{% set bg = 'text-bg-success' %}{% endif %}
+        {% if category == 'danger' %}{% set bg = 'text-bg-danger' %}{% endif %}
+        {% if category == 'warning' %}{% set bg = 'text-bg-warning' %}{% endif %}
+        {% if category == 'info' %}{% set bg = 'text-bg-info' %}{% endif %}
+        <div class="toast align-items-center {{ bg }} border-0" role="alert" aria-live="assertive" aria-atomic="true"
+             data-bs-autohide="true" data-bs-delay="5000">
+          <div class="d-flex">
+            <div class="toast-body">
+              {{ message }}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+</div>
+
+<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#courseModal">Add Course</button>
+
+<div class="modal fade" id="courseModal" tabindex="-1" aria-labelledby="courseModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="courseModalLabel">Course Information</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="{{ url_for('course.course') }}">
+          {{ c_form.hidden_tag() }}
+          {{ c_form.course_name(class='form-control mb-2', placeholder='Course Name') }}
+          {{ c_form.course_description(class='form-control mb-2', placeholder='Course Description') }}
+          {{ c_form.subject(class='form-control mb-2', placeholder='Subject') }}
+          {{ c_form.course_duration(class='form-control mb-2', placeholder='Course Duration (hours)') }}
+          {{ c_form.teacher(class='form-control mb-2', placeholder='Teacher') }}
+          <button type="submit" class="btn btn-success mt-2">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button type="button" class="btn btn-danger mb-3" data-bs-toggle="modal" data-bs-target="#deleteCourseModal">Delete Course</button>
+
+<div class="modal fade" id="deleteCourseModal" tabindex="-1" aria-labelledby="deleteCourseModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="deleteCourseForm" methods="POST">
+        {{ csrf_token() if csrf_token is defined }}
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteCourseModalLabel">Delete Course</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <label for="courseSelect" class="form-label">Select a course to delete:</label>
+          <select id="courseSelect" name="course_id" class="form-select">
+            {% for c in courses %}
+              <option value="{{ c.id }}"
+                      data-delete-url="{{ url_for('course.delete_course', course_id=c.id) }}">
+                {{ c.course_name }}{% if c.subject %} — {{ c.subject }}{% endif %}
+              </option>
+            {% endfor %}
+          </select>
+          <div class="form-text mt-2">This action cannot be undone.</div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteCourseBtn">Delete</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="course-container">
+  <h2 class="course_title">Courses</h2>
+  <div class="course_list">
+    <ul class="course_list">
+      {% for course in courses %}
+        <li class="course_info">
+          <a href="{{ url_for('course.course_sections', course_id=course.id) }}">
+            {{ course.course_name }}{% if course.subject %}  {{ course.teacher }}{% endif %}
+          </a>
+        </li>
+      {% else %}
+        <li class="course_info">No courses yet.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.toast').forEach(function (el) {
+    try { new bootstrap.Toast(el).show(); } catch (e) {}
+  });
+
+  const deleteForm = document.getElementById('deleteCourseForm');
+  const courseSelect = document.getElementById('courseSelect');
+  const confirmDeleteBtn = document.getElementById('confirmDeleteCourseBtn');
+
+  if (confirmDeleteBtn && deleteForm && courseSelect) {
+    confirmDeleteBtn.addEventListener('click', function () {
+      const opt = courseSelect.options[courseSelect.selectedIndex];
+      if (!opt) return;
+      const deleteUrl = opt.getAttribute('data-delete-url');
+      if (!deleteUrl) return;
+      deleteForm.action = deleteUrl;
+      deleteForm.submit();
+    });
+  }
+});
+</script>
+{% endblock %}

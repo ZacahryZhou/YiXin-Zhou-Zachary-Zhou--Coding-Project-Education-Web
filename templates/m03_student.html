@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<link rel='stylesheet' href='{{ url_for('static', filename='css/m03_student.css')}}'>
+
+<button id='openModalBtn' class='btn btn-primary mb-3'>Add Student</button>
+
+<div class='modal fade' id='studentModal' tabindex='-1' aria-labelledby='studentModalLabel' aria-hidden='true'>
+  <div class='modal-dialog'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h5 class='modal-title' id='studentModalLabel'>Student-information</h5>
+        <button type='button' class='btn-close' data-bs-dismiss='modal'></button>
+      </div>
+      <div class='modal-body'>
+        <form method='POST' action='/student'>
+            {{ s_form.hidden_tag() }}
+            {{ s_form.first_name(class='form-control', placeholder='First Name') }}
+            {{ s_form.last_name(class='form-control', placeholder='Last Name') }}
+            {{ s_form.age(class='form-control', placeholder='Age')}}
+            {{ s_form.grade(class='form-control', placeholder='Grade') }}
+            {{ s_form.email(class='form-control', placeholder='Email') }}
+            {{ s_form.phone(class='form-control', placeholder='Phone') }}
+            {{ s_form.gender(class='form-select', placeholder='Gender') }}
+            <button type='submit' class='btn btn-success mt-3'>Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button type='button' id='openDeleteModalBtn' class='btn btn-danger mb-3'>Delete Student</button>
+
+<div class='modal fade' id='deleteModal' tabindex='-1' role='dialog' aria-labelledby='deleteModalLabel' aria-hidden='true'>
+  <div class='modal-dialog'>
+    <div class='modal-content'>
+
+      <form id='deleteForm' method='POST'>  
+
+        <div class='modal-header'>
+          <h5 class='modal-title' id='deleteModalLabel'>Delete Student</h5>
+          <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+        </div>
+
+        <div class='modal-body'>
+          <label for='studentSelect'>Select a student to delete:</label>
+          <select id='studentSelect' name='student_id' class='form-select'>
+            {% for student in students %}
+              <option value='{{ student.id }}'>{{ student.first_name }} {{ student.last_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class='modal-footer'>
+          <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cancel</button>
+          <button type='button' class='btn btn-danger' id='confirmDeleteButton'>Delete</button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>
+
+
+{% block script %}
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+  
+  const openAddBtn = document.getElementById('openModalBtn');
+  const studentModalEl = document.getElementById('studentModal');
+  const studentModal = new bootstrap.Modal(studentModalEl);
+
+  
+  openAddBtn.addEventListener('click', function () {
+    studentModal.show();
+  });
+
+  
+  studentModalEl.addEventListener('hidden.bs.modal', function () {
+    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+    document.body.classList.remove('modal-open');
+    document.body.style = '';
+
+    
+    if (document.activeElement) {
+      document.activeElement.blur();
+    }
+  });
+});
+</script>
+
+<script>
+
+  document.addEventListener('DOMContentLoaded', function () {
+    
+    const openAddBtn = document.getElementById('openModalBtn');
+    const studentModalEl = document.getElementById('studentModal');
+    const studentModal = new bootstrap.Modal(studentModalEl);
+    openAddBtn.addEventListener('click', () => studentModal.show());
+
+    
+    const openDeleteBtn = document.getElementById('openDeleteModalBtn');
+    const deleteModalEl = document.getElementById('deleteModal');  
+    const deleteModal = new bootstrap.Modal(deleteModalEl);        
+    const deleteForm = document.getElementById('deleteForm');
+    const studentSelect = document.getElementById('studentSelect');
+    const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+
+    openDeleteBtn.addEventListener('click', () => {
+      deleteModal.show();
+    });
+
+    confirmDeleteButton.addEventListener('click', function (e) {
+      e.preventDefault();
+      const studentId = studentSelect.value;
+      const deleteUrl = `/student/${studentId}/delete_student`;
+      deleteForm.setAttribute('action', deleteUrl);
+      deleteForm.submit();
+    });
+
+    
+    deleteModalEl.addEventListener('hidden.bs.modal', function () {
+      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+      document.body.classList.remove('modal-open');
+      document.body.style = '';
+
+      if (document.activeElement) {
+        document.activeElement.blur();
+      }
+    });
+  });
+</script>
+{% endblock %}
+
+
+
+
+
+<div class='student-container'>
+    <h2 class='student_title'>Student</h2>
+    <div class='student-list'>
+        <ul class="list-unstyled">
+            {% for student in students %}
+                <li class='student_info'>
+                    <a href='{{url_for('student.student_detail', student_id=student.id)}}'>
+                        {{ student.first_name}} {{student.last_name}} {{ student.age }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+{% endblock %}

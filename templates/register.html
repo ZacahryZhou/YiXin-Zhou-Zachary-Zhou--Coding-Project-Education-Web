@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+<body>
+
+  <div class="auth">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="login-logo">
+    <h2>Register</h2>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class='flashes'>
+           {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method='POST'>
+      {{ form.hidden_tag() }}
+
+      <label for='email'>Email:</label>
+      {{ form.email(size=30, class='auth-input')}}
+      {% if form.email.errors %}
+        <p class='error'>{{ form.email.errors[0] }} </p>
+      {% endif %}
+
+      <label for='password'>Password: </label>
+      {{ form.password(size=30, class='auth-input') }}
+      {% if form.password.errors %}
+        <p class='error'>{{ form.password.errors[0] }}</p>
+      {% endif %}
+
+      {{ form.submit(class='auth-button') }}
+    </form>
+   
+    <p>Already have an account? <a href='{{ url_for('auth.login') }}'>Login here</a></p>
+  </div>
+
+</body>
+</html>

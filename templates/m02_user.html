@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<link rel='stylesheet' href=' {{ url_for('static', filename='css/M02_user.css')}}'>
+
+<div class='profile-container'>
+    <h2 class='section-title'> Personal Information</h2>
+    <form method='POST'> 
+        {{ form.hidden_tag() }}
+
+        <div class='personal-section'>
+            <div class='personal-name-info'>
+                <div class='form-group short-input'>
+                    <label for='first_name'>First Name</label>
+                    {{ form.first_name(class='input-field') }}
+            
+                    <label for='last_name'>Last Name</label>
+                    {{ form.last_name(class='input-field') }}
+                </div>
+            </div>
+
+            <div class='personal-contact-info'>
+                <div class='form-group short-input'>
+                    <label for='email'>Email</label>
+                    {{ form.email(class='input-field') }}
+
+                    <label for='gender'>Gender</label>
+                    {{ form.gender(class='input-field') }}
+                </div>
+            </div>
+        </div>
+
+        <div class='other-section'>
+            <div class='other-info'>
+                <div class='form-group long-input'>
+                    <label for='phone'>Phone</label>
+                    {{ form.phone(class='input-field') }}
+
+                    <label for='links'>Links</label>
+                    {{ form.links(class='input-field') }}
+                </div>
+            </div>
+        </div>
+
+        <div class='submit-button'>
+            {{ form.submit(class='btn btn-primary') }}
+        </div>
+    </form>
+</div>
+
+{% endblock %}

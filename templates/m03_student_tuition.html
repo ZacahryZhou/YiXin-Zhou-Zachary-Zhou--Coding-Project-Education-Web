@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<link rel='stylesheet' href='{{ url_for('static', filename='css/m03_student_tuition.css') }}'>
+
+<div class='tuition-container'>
+  <h2 class='section-title'>{{ student.first_name }}'s Tuition Information</h2>
+
+  <button type='button' class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#tuitionModal'>
+    Modify Tuition
+  </button>
+
+  
+  <div class='modal fade' id='tuitionModal' tabindex='-1'>
+    <div class='modal-dialog'>
+      <div class='modal-content'>
+
+        <div class='modal-header'>
+          <h5 class='modal-title'>Edit Tuition</h5>
+          <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+        </div>
+
+        <form method='POST' action='{{ url_for('student.add_tuition', student_id=student.id) }}'>
+          {{ t_form.hidden_tag() }}
+
+          <div class='modal-body'>
+
+            
+            <div class='form-group'>
+              <label for='modeSelect'>Billing Mode:</label>
+              {{ t_form.mode(class='form-select', id='modeSelect') }}
+            </div>
+
+            
+            <div class='form-group'>
+              <label for='paid'>Paid Amount:</label>
+              {{ t_form.paid_amount(class='form-control', id='paid') }}
+            </div>
+
+            
+            <div id='LessonForm' class='mt-3'>
+              <label for='lessonCount'>Lesson Count:</label>
+              {{ t_form.lesson_quantity(class='form-control', id='lessonCount') }}
+
+              <label for='rateLesson'>Rate per Lesson:</label>
+              {{ t_form.rate_per_lesson(class='form-control', id='rateLesson') }}
+            </div>
+
+            
+            <div id='HourForm' class='mt-3' style='display:none;'>
+              <label for='durationHours'>Duration (hours):</label>
+              {{ t_form.duration_hours(class='form-control', id='durationHours') }}
+
+              <label for='rateHour'>Rate per Hour:</label>
+              {{ t_form.rate_per_hour(class='form-control', id='rateHour') }}
+            </div>
+
+            
+            <div class='form-group mt-3'>
+              <label for='note'>Note:</label>
+              {{ t_form.note(class='form-control', id='note') }}
+            </div>
+
+            <div class='form-group mt-3'>
+              <label for='tuition_amount'>Tuition Amount:</label>
+              {{ t_form.tuition_amount(class='form-control', id='note') }}
+            </div>
+
+          </div>
+
+          <div class='modal-footer'>
+            {{ t_form.submit(class='btn btn-success') }}
+            <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Cancel</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="tuition-list">
+  <h5>Summary</h5>
+  <p>Total Amount: {{ total_tuition_amount }}</p>
+  <p>Total Lessons: {{ total_lessons }}</p>
+  <p>Total Paid Amount: {{ total_paid_amount }}</p>
+  <p>Balance: {{ balance }}</p>
+</div>
+
+
+<div class="tuition-list-container">
+  {% for record in tuition_records %}
+    <div class="tuition-box">
+      <p><strong>Mode:</strong> {{ record.mode }}</p>
+      {% if record.mode == 'lesson' %}
+        <p>Lesson Count: {{ record.lesson_quantity }}</p>
+        <p>Rate per Lesson: {{ record.rate_per_lesson }}</p>
+      {% elif record.mode == 'duration_hours' %}
+        <p>Duration (hours): {{ record.duration_hours }}</p>
+        <p>Rate per Hour: {{ record.rate_per_hour }}</p>
+      {% endif %}
+      <p>Amount: {{ record.tuition_amount }}</p>
+      <p>Note: {{ record.note or 'N/A' }}</p>
+    </div>
+  {% endfor %}
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const modeSelect = document.getElementById('modeSelect');
+    const lessonForm = document.getElementById('LessonForm');
+    const hourForm = document.getElementById('HourForm');
+
+    function updateFormVisibility() {
+      if (modeSelect.value === 'lesson') {
+        lessonForm.style.display = 'block';
+        hourForm.style.display = 'none';
+      } else if (modeSelect.value === 'duration_hours') {
+        lessonForm.style.display = 'none';
+        hourForm.style.display = 'block';
+      }
+    }
+
+    updateFormVisibility();
+    modeSelect.addEventListener('change', updateFormVisibility);
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/m04_course_sections.css') }}">
+
+<!-- Header：标题在左，按钮组靠右 -->
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h2 class="course-title mb-0">{{ course.course_name }}'s Sections</h2>
+  <div class="d-flex gap-2 ms-auto">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddCourseSectionModal">
+      Add Section
+    </button>
+    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#DeleteCourseSectionModal">
+      Delete Section
+    </button>
+  </div>
+</div>
+
+<!-- Section 列表 -->
+<div id="section-list">
+  {% if course_sections and course_sections|length > 0 %}
+    {% for sec in course_sections %}
+      <div class="section-item border rounded p-3 mb-2">
+        <div class="fw-semibold">
+          {{ sec.title }}
+          {% if sec.section_order is not none %}
+            <span class="ms-2 text-muted small">#{{ sec.section_order }}</span>
+          {% endif %}
+        </div>
+
+        {% if sec.description %}
+          <div class="small text-muted">{{ sec.description }}</div>
+        {% endif %}
+
+        {% if sec.content %}
+          <div class="small mt-1" style="white-space: pre-wrap;">{{ sec.content }}</div>
+        {% endif %}
+
+        {% if sec.section_url %}
+          <div class="mt-1"><a href="{{ sec.section_url }}" target="_blank" rel="noopener">Resource</a></div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="text-muted small">No sections yet.</div>
+  {% endif %}
+</div>
+
+<!-- ========== 新建 Section 模态框（同步提交，避免双提交） ========== -->
+<div class="modal fade" id="AddCourseSectionModal" tabindex="-1" aria-labelledby="AddCourseSectionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="AddCourseSectionModalLabel">Add Course Section</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      
+      <form id="course-section-form"
+            method="post"
+            action="{{ url_for('course.course_sections', course_id=course.id) }}">
+        <div class="modal-body">
+          {{ c_s_form.hidden_tag() }}
+
+          <!-- Title -->
+          <div class="mb-3">
+            <label class="form-label mb-1">Title</label>
+            {{ c_s_form.title(class='form-control', placeholder='Title') }}
+            {% for e in c_s_form.title.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+          </div>
+
+          <!-- Order + URL -->
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label mb-1">Section Order</label>
+              {{ c_s_form.section_order(class='form-control', placeholder='Auto if empty') }}
+              {% for e in c_s_form.section_order.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label mb-1">Resource URL</label>
+              
+              {% if c_s_form.section_URL is defined %}
+                {{ c_s_form.section_URL(class='form-control', placeholder='https://...') }}
+                {% for e in c_s_form.section_URL.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="mt-3">
+            <label class="form-label mb-1">Description</label>
+            {{ c_s_form.description(class='form-control', placeholder='Short summary (<= 500 chars)', rows='3') }}
+            {% for e in c_s_form.description.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+          </div>
+
+          <!-- Content -->
+          <div class="mt-3">
+            <label class="form-label mb-1">Content</label>
+            {{ c_s_form.content(class='form-control', placeholder='Detailed steps / materials / homework ...', rows='6') }}
+            {% for e in c_s_form.content.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary"
+                  onclick="this.disabled=true; this.innerText='Submitting...'; this.form.submit();">
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="DeleteCourseSectionModal" tabindex="-1" aria-labelledby="DeleteCourseSectionModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="deleteCourseSectionForm" method="POST" action="">
+        {{ c_s_form.csrf_token }}
+        <div class="modal-header">
+          <h5 class="modal-title" id="DeleteCourseSectionModalLabel">Delete Course Section</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <label for="courseSectionSelect" class="form-label">Select a section to delete:</label>
+          <select id="courseSectionSelect" class="form-select">
+            {% for s in course_sections %}
+              <option value="{{ s.id }}" data-delete-url="{{ url_for('course.delete_section', section_id=s.id) }}">
+                {{ s.title }}
+              </option>
+            {% endfor %}
+          </select>
+          <div class="form-text mt-2">This action cannot be undone.</div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteCourseSectionBtn">Delete</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const select = document.getElementById('courseSectionSelect');
+  const form   = document.getElementById('deleteCourseSectionForm');
+  const btn    = document.getElementById('confirmDeleteCourseSectionBtn');
+  function syncAction() {
+    const opt = select.options[select.selectedIndex];
+    form.action = opt ? opt.dataset.deleteUrl : '';
+  }
+  syncAction();
+  select.addEventListener('change', syncAction);
+  btn.addEventListener('click', function () {
+    if (!form.action) return;
+    if (confirm('Delete this section? This cannot be undone.')) {
+      form.method = 'POST';
+      form.submit();
+    }
+  });
+});
+</script>
+{% endblock %}

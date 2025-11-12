@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<link rel='stylesheet' href='{{ url_for('static', filename='css/m03_student_detail.css') }}'>
+
+<div class='student-container'>
+    <h2 class='section-title'> Student Information</h2>
+    <form method='POST'> 
+        {{ form.hidden_tag() }}
+
+        <div class='sis'> <!--student-info-section-->
+             <img src='{{ url_for('static', filename='images/avatar-female.png') }}' class='avatar_img'>
+            <div class='si'> <!--student-info-->
+                <div class='form-group short-input'>
+                    <label for='first_name'>First Name</label>
+                    {{ form.first_name(class='input-field') }}
+            
+                    <label for='last_name'>Last Name</label>
+                    {{ form.last_name(class='input-field') }}
+                </div>
+            </div>
+
+            <div class='soi'> <!--student-other-info-->
+                <div class='form-group short-input'>
+                    <label for='email'>Email</label>
+                    {{ form.email(class='input-field') }}
+
+                    <label for='gender'>Gender</label>
+                    {{ form.gender(class='input-field') }}
+                </div>
+            </div>
+        </div>
+
+        <div class='sci'> <!--student-contact-info-->
+            <img src='{{ url_for('static', filename='images/avatar-male.png') }}' class='avatar_img_male'>
+            <div class='sc'> <!--student-contact-->
+                
+                <div class='long-input'>
+                    <label for='phone'>Phone</label>
+                    {{ form.phone(class='input-field') }}
+
+                    <label for='age'>Age</label>
+                    {{ form.age(class='input-field') }}
+
+                    <label for='grade'>Grade</label>
+                    {{ form.grade(class='input-field') }}
+
+                    <label for='cource'>Cource</label>
+                    {{ form.course(class='input-field')}}
+                </div>
+
+               <a href='{{ url_for('student.tuition', student_id=student.id) }}' class='btn tuition-btn'>
+                 <i class='fa-solid fa-money-bill'></i> Tuition
+               </a>
+                
+            </div>
+        </div>
+
+        <div class='submit-button'>
+            {{ form.submit(class='btn btn-primary') }}
+        </div>
+    </form>
+</div>
+
+{% endblock %}

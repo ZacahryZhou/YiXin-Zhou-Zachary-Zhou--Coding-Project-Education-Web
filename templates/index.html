@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SoloTeach</title>
+  
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+<body>
+  <div class="container">
+    
+    <div class="logo">Solo<span>Teach</span></div>
+
+   
+    <div class="nav">
+      <a href="{{ url_for('auth.login') }}">Login</a>
+      <a href="{{ url_for('auth.register') }}">
+  <button class="signup">Sign up for free</button>
+</a>
+    </div>
+
+    
+    <div class="line red"></div>
+
+    
+    <div class="line blue"></div>
+
+    
+    <div class="main-title">Solo, but powerful</div>
+
+    
+    <div class="subtitle">Teach smarter with a system that keeps you organized, on track, and in control.</div>
+
+    
+    <div class="right-img">
+      <img src="{{ url_for('static', filename='images/1.png') }}" alt="Teacher" width="300">
+      <p>Redefine the way we teach —<br>simple, smart at every turn.</p>
+    </div>
+
+  
+
+    
+    <img src="{{ url_for('static', filename='images/2.png') }}" alt="Cartoon" width="300">
+  </div>
+</body>
+</html>

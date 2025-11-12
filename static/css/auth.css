@@ -1,0 +1,92 @@
+/* 这里下面是有关登录和注册的css内容*/
+
+body {
+    background: url("bg.jpg") no-repeat center center fixed;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* 登录/注册框样式 */
+  .form-container {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 40px 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    backdrop-filter: blur(5px);
+  }
+  
+  /* logo 图 */
+  .login-logo {
+    max-width: 90px;
+    border-radius: 50%;
+    margin-bottom: 15px;
+    border: 2px solid #ccc;
+  }
+  
+  /* 表单输入框 */
+  .auth-input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0 20px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+  }
+  
+  /* 按钮样式 */
+  .auth-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .auth-button:hover {
+    background-color: #43a047;
+  }
+  
+  .error {
+    color:red;
+    font-size: 14px;
+    margin: -10px 0 15px 0;
+    text-align: left;
+  }
+  /* 底部链接 */
+  p {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #444;
+  }
+  
+  a {
+    color: #4CAF50;
+    text-decoration: none;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+
+  .flashes {
+  list-style-type: none;
+  padding: 10px;
+  margin-bottom: 20px;
+  background-color: #e6f7ff;
+  border: 1px solid #91d5ff;
+  color: #0050b3;
+  border-radius: 5px;
+}
