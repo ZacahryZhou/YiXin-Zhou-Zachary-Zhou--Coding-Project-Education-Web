@@ -22,7 +22,7 @@ app.register_blueprint(profile_bp)
 app.register_blueprint(student_bp)
 app.register_blueprint(course_bp)
 db.init_app(app)
-migrate.init_app(app, db)
+migrate.init_app(app, db) #combine the flask-migrate with the app and the sqlalchemy db, that I can use migrate to handle db migrations#
 
 login_manager.init_app(app)
 login_manager.login_view = 'auth.login'
