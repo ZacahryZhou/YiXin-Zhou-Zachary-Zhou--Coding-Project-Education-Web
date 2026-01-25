@@ -1,0 +1,2 @@
+2026/1/25:
+I continue developming this website for more functions after I finished my IELTS Exams and applying University. I update the Readme.md. I add more detail for the motivation to develop this website and some problems that I have melt in the development. In the future, I will redesign the base.html and other page. Furthermore, I will design more functions to help people the independent teachers to manage their schedules and students.
